@@ -1,0 +1,111 @@
+LAMMPS (7 Feb 2024 - Update 1)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+
+    clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+    units metal
+    dimension 3
+    boundary p p p
+    atom_style atomic
+    variable writefreq equal 100
+    variable dt equal 0.001
+    variable T equal 3000.0
+    variable size equal 3
+    
+    lattice fcc 4.08
+Lattice spacing in x,y,z = 4.08 4.08 4.08
+    region whole block 0 ${size} 0 ${size} 0 ${size}
+    region whole block 0 3 0 ${size} 0 ${size}
+    region whole block 0 3 0 3 0 ${size}
+    region whole block 0 3 0 3 0 3
+    create_box 1 whole
+Created orthogonal box = (0 0 0) to (12.24 12.24 12.24)
+  1 by 1 by 1 MPI processor grid
+    lattice fcc 4.08 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+Lattice spacing in x,y,z = 4.08 4.08 4.08
+    create_atoms 1 region whole
+Created 108 atoms
+  using lattice units in orthogonal box = (0 0 0) to (12.24 12.24 12.24)
+  create_atoms CPU = 0.000 seconds
+    
+    pair_style lj/cut 9.69298
+    pair_coeff * * 2.3058 2.42324
+    mass 1 196.966569
+    
+    timestep ${dt}
+    timestep 0.001
+    velocity all create $T 90909 rot yes mom yes dist gaussian
+    velocity all create 3000 90909 rot yes mom yes dist gaussian
+    fix mynvt all nvt temp $T $T $(dt*1000)
+    fix mynvt all nvt temp 3000 $T $(dt*1000)
+    fix mynvt all nvt temp 3000 3000 $(dt*1000)
+    fix mynvt all nvt temp 3000 3000 1
+    
+    dump mydump all atom ${writefreq} atom.lammpstrj
+    dump mydump all atom 100 atom.lammpstrj
+
+    compute numatoms all count/type atom
+    variable ke_kilojoules equal "ke * 1.602e-19 / atoms * 6.022e23"
+    thermo_style custom step temp etotal ke pe v_ke_kilojoules
+    thermo 1000
+    
+    write_data initial.data
+System init for write_data ...
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 11.69298
+  ghost atom cutoff = 11.69298
+  binsize = 5.84649, bins = 3 3 3
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+    
+run 10000
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+Per MPI rank memory allocation (min/avg/max) = 3.18 | 3.18 | 3.18 Mbytes
+   Step          Temp          TotEng         KinEng         PotEng     v_ke_kilojoules
+         0   3000          -1714.171       41.492507     -1755.6635      37063.735    
+      1000   1892.3032     -1707.2774      26.172134     -1733.4496      23378.608    
+      2000   2244.0918     -1697.6358      31.037665     -1728.6735      27724.808    
+      3000   2689.6548     -1686.1473      37.200174     -1723.3475      33229.551    
+      4000   2855.1725     -1675.2917      39.489422     -1714.7811      35274.452    
+      5000   3291.8104     -1668.5302      45.528488     -1714.0587      40668.929    
+      6000   3141.2411     -1669.5449      43.445989     -1712.9909      38808.709    
+      7000   3092.2422     -1676.533       42.768293     -1719.3013      38203.348    
+      8000   3047.6171     -1681.1508      42.151091     -1723.3019      37652.024    
+      9000   2654.3604     -1680.6023      36.712023     -1717.3144      32793.504    
+     10000   2850.8791     -1675.0386      39.43004      -1714.4687      35221.409    
+Loop time of 0.579009 on 1 procs for 10000 steps with 108 atoms
+
+Performance: 1492.204 ns/day, 0.016 hours/ns, 17270.884 timesteps/s, 1.865 Matom-step/s
+99.7% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.51031    | 0.51031    | 0.51031    |   0.0 | 88.13
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.042403   | 0.042403   | 0.042403   |   0.0 |  7.32
+Output  | 0.0055967  | 0.0055967  | 0.0055967  |   0.0 |  0.97
+Modify  | 0.0099573  | 0.0099573  | 0.0099573  |   0.0 |  1.72
+Other   |            | 0.01075    |            |       |  1.86
+
+Nlocal:            108 ave         108 max         108 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           2348 ave        2348 max        2348 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          20520 ave       20520 max       20520 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 20520
+Ave neighs/atom = 190
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:00

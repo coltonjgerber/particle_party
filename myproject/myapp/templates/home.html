@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Animation</title>
+    <style>
+      #animation {
+          width: 400px;
+          height: 400px;
+          background-color: #f0f0f0;
+          position: relative;
+      }
+      .box {
+          width: 50px;
+          height: 50px;
+          background-color: #007bff;
+          position: absolute;
+          animation: move 4s infinite alternate;
+      }
+      @keyframes move {
+          0% { top: 0; left: 0; }
+          100% { top: 350px; left: 350px; }
+      }
+    </style>
+    <script>
+      function startAnimation() {
+          fetch('/api/start-animation/')
+              .then(response => response.json())
+              .then(data => {
+                  alert(data.status);
+                  // Additional animation logic here
+              });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="animation">
+      <div class="box"></div>
+    </div>
+    <button onclick="startAnimation()">Start Animation</button>
+  </body>
+</html>
